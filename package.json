@@ -1,5 +1,5 @@
 {
-  "name": "_zapier",
+  "name": "zapier",
   "private": true,
   "scripts": {
     "build": "turbo build",

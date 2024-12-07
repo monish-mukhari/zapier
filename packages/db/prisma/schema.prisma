@@ -1,0 +1,76 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String   
+  zaps      Zap[]
+}
+
+model Zap {
+  id        String   @id @default(uuid())
+  userId    Int      @map("user_id")
+  user      User     @relation(fields: [userId], references: [id])
+  triggerId String   @map("trigger_id")
+  trigger   Trigger?
+  actions   Action[]
+  zapRuns   ZapRun[]
+}
+
+model Trigger {
+  id            String    @id @default(uuid())
+  zapId         String    @unique @map("zap_id")
+  zap           Zap       @relation(fields: [zapId], references: [id])
+  triggerId     String    @map("trigger_id")    
+  type          AvailableTrigger @relation(fields: [triggerId], references: [id])
+  
+}
+
+model AvailableTrigger {
+  id        String    @id @default(uuid())
+  name      String
+  triggers  Trigger[]
+}
+
+model Action {
+  id            String          @id @default(uuid())
+  zapId         String          @map("zap_id")
+  zap           Zap             @relation(fields: [zapId], references: [id])
+  actionId      String          @map("action_id")
+  type          AvailableAction @relation(fields: [actionId], references: [id])
+  sortingOrder  Int             @default(0) @map("sorting_order")
+}
+
+model AvailableAction {
+  id        String    @id @default(uuid())
+  name      String
+  actions   Action[]
+}
+
+model ZapRun {
+  id            String   @id @default(uuid())
+  zapId         String   @map("zap_id")
+  zap           Zap      @relation(fields: [zapId], references: [id])
+  zapRunOutbox  ZapRunOutbox?
+  metadata      Json
+}
+
+model ZapRunOutbox {
+  id        String   @id @default(uuid())
+  zapRunId  String   @unique @map("zap_run_id")
+  zapRun    ZapRun   @relation(fields: [zapRunId], references: [id])
+}
