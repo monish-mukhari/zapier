@@ -43,6 +43,7 @@ model Trigger {
 model AvailableTrigger {
   id        String    @id @default(uuid())
   name      String
+  image     String
   triggers  Trigger[]
 }
 
@@ -58,6 +59,7 @@ model Action {
 model AvailableAction {
   id        String    @id @default(uuid())
   name      String
+  image     String
   actions   Action[]
 }
 
