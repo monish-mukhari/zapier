@@ -20,18 +20,16 @@ async function main() {
         });
 
         console.log(pendingRows);
-        
 
         await producer.send({
                 topic: TOPIC_NAME,
                 messages: pendingRows.map(r => {
                     return {
-                        value: r.zapRunId
+                        value: JSON.stringify({ zapRunId: r.zapRunId, stage: 0 })
                     }
                 }) 
         });
 
-        console.log("Sent messages");
 
         await prisma.zapRunOutbox.deleteMany({
             where: {
@@ -39,8 +37,9 @@ async function main() {
                     in: pendingRows.map(r => r.id)
                 }
             }
-        })
+        });
 
+        await new Promise(r => setTimeout(r, 3000));
         
     }
 }

@@ -52,6 +52,7 @@ model Action {
   zapId         String          @map("zap_id")
   zap           Zap             @relation(fields: [zapId], references: [id])
   actionId      String          @map("action_id")
+  metadata      Json            @default("{}")
   type          AvailableAction @relation(fields: [actionId], references: [id])
   sortingOrder  Int             @default(0) @map("sorting_order")
 }
